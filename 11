@@ -1,0 +1,53 @@
+def U( a, b ):  
+    u = [a,b]  
+    yield a  
+    yield b  
+    even, index = 0, 0  
+      
+    while even == 0 or u[-1] < 2 * even:  
+        sums = {}  
+        for x in xrange( len( u ) ):  
+            for y in xrange( x + 1, len( u ) ):  
+                if sums.has_key( u[x] + u[y] ):  
+                    sums[u[x] + u[y]] += 1  
+                else:  
+                    sums[u[x] + u[y]] = 1  
+        u.append( min( k for k, v in sums.iteritems() if v == 1 and k > u[-1] ) )  
+        yield u[-1]  
+        if u[-1] % 2 == 0:  
+            even = u[-1]  
+          
+    while even + u[index] <= u[-1]:  
+        index+=1 #find first index  
+      
+    while True:  
+        if even + u[index] > u[-1] + 2:  
+            u.append( u[-1] + 2 )  
+        else:  
+            u.append( even + u[index + 1] )  
+            index += 2  
+        yield u[-1]  
+  
+  
+from time import clock  
+  
+start = clock()  
+periods = [32, 26, 444, 1628, 5906, 80, 126960, 380882, 2097152]  
+diffs = [126, 126, 1778, 6510, 23622, 510, 507842, 1523526, 8388606]  
+target = 100000000000  
+total = 0  
+  
+for i in range( 2, 11 ):  
+    u = U( 2, 2 * i + 1 )  
+    count = 0  
+      
+    while count < 1000 or ( target - count ) % periods[i - 2] != 0:  
+        num = u.next()  
+        count = count + 1  
+  
+    total += num + ( target - count ) * diffs[i - 2] / periods[i - 2]  
+  
+stop = clock()  
+  
+print total  
+print stop - start  
